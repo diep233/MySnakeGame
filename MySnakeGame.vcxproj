@@ -146,10 +146,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="SnakeGameMain.cpp" />
-    <ClCompile Include="Snake.cpp" />
+    <ClCompile Include="MyGame.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Snake.h" />
+    <ClInclude Include="MyGame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

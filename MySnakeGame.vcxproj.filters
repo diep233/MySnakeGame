@@ -18,12 +18,12 @@
     <ClCompile Include="SnakeGameMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Snake.cpp">
+    <ClCompile Include="MyGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Snake.h">
+    <ClInclude Include="MyGame.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
