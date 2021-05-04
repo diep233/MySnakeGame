@@ -4,6 +4,7 @@
 #include<SDL.h>
 #include"SDL_image.h"
 #include"SDL_mixer.h"
+#include"SDL_ttf.h"
 
 using namespace std;
 
@@ -25,8 +26,16 @@ class game{
 
 	SDL_Window* window = NULL;
 	SDL_Surface* gScreenSurFace = NULL;
-	
+	SDL_Surface* surfaceMessage;
 	SDL_Event event;
+	SDL_Renderer* render = NULL;
+	SDL_Color white = { 255,255,255 };
+	SDL_Texture* Message;
+	SDL_Rect srcrectMessageRect;
+	SDL_Rect dstrectMessageRect;
+
+
+	TTF_Font* gFont = NULL;
 
 	Mix_Chunk* effectMusic = NULL;
 	Mix_Music* backgroundMusic = NULL;
@@ -35,19 +44,17 @@ class game{
 	enum block { head, body, food, empty };
 
 	direction dir = RIGHT;
-	direction beforeDir = RIGHT;
 
 	SDL_Point snakeHeadPoint = { 2, 2 };
-	SDL_Point foodPoint;
+	SDL_Point foodPoint = { 0, 0 };
 	vector<SDL_Point> snakeBody;
 	block array[coordidateHeight][coordidateWidth];
 
 	public: 
-		SDL_Renderer* render = NULL;
-		void createBody(int number);
 		void run();
 		void playBackgroundMusic();
 		void init();
+		void showScores();
 		void gameLoop();
 		void keyBoardEvent();
 		void update();

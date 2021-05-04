@@ -1,4 +1,5 @@
-#include<string.h>
+#include<iostream>
+#include<string>
 #include"SDL.h"
 #include"MyGame.h"
 #include"SDL_image.h"
@@ -14,18 +15,22 @@ void game::run() {
 
 void game::init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		cout << "unable to initialize SDL" << SDL_GetError();
+		cout << "Unable to initialize SDL" << SDL_GetError();
 		exit(EXIT_FAILURE);
 	}
 	window = SDL_CreateWindow("Wellcome to my snake game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, heightBoard, widthBoard, SDL_WINDOW_SHOWN);
 	if (window == NULL) {
-		cout << "unable to create window" << SDL_GetError();
+		cout << "Unable to create window" << SDL_GetError();
 	}
 	render = SDL_CreateRenderer(window, -1, 0);
 
 	for (int i = 0; i < coordidateHeight; ++i) {
 		for (int j = 0; j < coordidateWidth; ++j)
 			array[i][j] = empty;
+	}
+
+	if (TTF_Init() == -1) {
+		cout << "TTF Initialization Error" << TTF_GetError();
 	}
 }
 void game::gameLoop() {
@@ -35,10 +40,11 @@ void game::gameLoop() {
 		keyBoardEvent();
 		update();
 		renderAll();
+		showScores();
 		timeRenderAFrame = SDL_GetTicks() - timeStartAFrame;
 
 		if (timeRenderAFrame < DELAY_TIME) {
-			SDL_Delay(500);
+			SDL_Delay(100);
 		}
 	}
 }
@@ -187,17 +193,15 @@ void game::renderAll() {
 		SDL_RenderFillRect(render, &blockPosition);
 	}
 
-
+	showScores();
 
 	SDL_RenderPresent(render);
-
-
 }
 
 void game::setRundomFood() {
 	srand(time(0));
 	foodPoint.x = rand() % coordidateWidth;
-	foodPoint.y = rand() % coordidateHeight;
+	foodPoint.y = rand() % coordidateHeight + 2;
 	array[foodPoint.x][foodPoint.y] = food;
 }
 void game::playBackgroundMusic() {
@@ -222,10 +226,41 @@ void game::playSoundEffect() {
 
 void game::close() {
 	SDL_Delay(5000);
-	SDL_FreeSurface(gScreenSurFace);
+	SDL_FreeSurface(surfaceMessage);
 	SDL_DestroyWindow(window);
 	Mix_FreeMusic(backgroundMusic);
 	Mix_FreeChunk(effectMusic);
+	TTF_Quit();
 	SDL_Quit();
+}
+
+void game::showScores() {
+	gFont = TTF_OpenFont("OpenSans-Bold.ttf", 24);
+
+	string title = "Snakle++ Score: " + to_string((snakeSize - 1) * 10);
+
+	surfaceMessage = TTF_RenderText_Solid(gFont, title.c_str(), white);
+	
+	if (surfaceMessage == NULL) {
+		cout << "Text render error" << SDL_GetError();
+	}
+
+	Message = SDL_CreateTextureFromSurface(render, surfaceMessage);
+	
+	if (Message == NULL) {
+		cout << "Createe Texture Error" << SDL_GetError();
+	}
+
+	srcrectMessageRect.x = (heightBoard / 2) - 100;
+	srcrectMessageRect.y = 0;
+	srcrectMessageRect.w = 200;
+	srcrectMessageRect.h = 42;
+
+	dstrectMessageRect.x = (heightBoard / 2) - 100 + 50;
+	dstrectMessageRect.y = 0;
+	dstrectMessageRect.w = 200;
+	dstrectMessageRect.h = 42;
+
+	SDL_RenderCopy(render, Message, NULL, &srcrectMessageRect);
 }
 
