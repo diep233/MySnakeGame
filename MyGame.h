@@ -33,7 +33,7 @@ class game{
 	SDL_Texture* Message;
 	SDL_Rect srcrectMessageRect;
 	SDL_Rect dstrectMessageRect;
-
+	SDL_Rect blockPosition;
 
 	TTF_Font* gFont = NULL;
 

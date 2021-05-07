@@ -14,6 +14,7 @@ void game::run() {
 }
 
 void game::init() {
+
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
 		cout << "Unable to initialize SDL" << SDL_GetError();
 		exit(EXIT_FAILURE);
@@ -62,7 +63,6 @@ void game::keyBoardEvent() {
 						break;
 					}
 					else {
-						playSoundEffect();
 						dir = DOWN;
 					}
 
@@ -74,7 +74,6 @@ void game::keyBoardEvent() {
 						break;
 					}
 					else {
-						playSoundEffect();
 						dir = UP;
 					}
 				}
@@ -85,7 +84,6 @@ void game::keyBoardEvent() {
 						break;
 					}
 					else {
-						playSoundEffect();
 						dir = RIGHT;
 					}
 				}
@@ -96,7 +94,6 @@ void game::keyBoardEvent() {
 						break;
 					}
 					else {
-						playSoundEffect();
 						dir = LEFT;
 					}
 				break;
@@ -139,12 +136,14 @@ void game::update() {
 	else if (newPoint.y < 0) newPoint.y = coordidateHeight - 1;
 	
 	SDL_Point nextBodyPoint;
+	nextBodyPoint = snakeHeadPoint;
 	if (array[newPoint.x][newPoint.y] == food) {
-		nextBodyPoint = snakeHeadPoint;
 		snakeBody.push_back(nextBodyPoint);
 		array[nextBodyPoint.x][nextBodyPoint.y] = body;
 		array[newPoint.x][newPoint.y] = head;
 		snakeSize++;
+
+		playSoundEffect();
 		setRundomFood();
 	}
 	else if (array[newPoint.x][newPoint.y] == empty) {
@@ -163,6 +162,9 @@ void game::update() {
 		}
 	}
 	else {
+		snakeBody.push_back(nextBodyPoint);
+		array[newPoint.x][newPoint.y] = head;
+		renderAll();
 		quit = true;
 	}
 
@@ -181,17 +183,17 @@ void game::renderAll() {
 	blockPosition.w = blockPosition.h = 16;
 	SDL_RenderFillRect(render, &blockPosition);
 
-	SDL_SetRenderDrawColor(render, 255, 255, 0, 0xFF);
-	blockPosition.x = snakeHeadPoint.x * 16;
-	blockPosition.y = snakeHeadPoint.y * 16;
-	SDL_RenderFillRect(render, &blockPosition);
-
 	SDL_SetRenderDrawColor(render, 255, 255, 255, 0);
 	for (int i = 0; i < snakeBody.size(); ++i) {
 		blockPosition.x = snakeBody[i].x * 16;
 		blockPosition.y = snakeBody[i].y * 16;
 		SDL_RenderFillRect(render, &blockPosition);
 	}
+
+	SDL_SetRenderDrawColor(render, 255, 255, 0, 0xFF);
+	blockPosition.x = snakeHeadPoint.x * 16;
+	blockPosition.y = snakeHeadPoint.y * 16;
+	SDL_RenderFillRect(render, &blockPosition);
 
 	showScores();
 
@@ -200,8 +202,8 @@ void game::renderAll() {
 
 void game::setRundomFood() {
 	srand(time(0));
-	foodPoint.x = rand() % coordidateWidth;
-	foodPoint.y = rand() % coordidateHeight + 2;
+	foodPoint.x = rand() % 40;
+	foodPoint.y = rand() % 38 + 2;
 	array[foodPoint.x][foodPoint.y] = food;
 }
 void game::playBackgroundMusic() {
@@ -225,7 +227,6 @@ void game::playSoundEffect() {
 }
 
 void game::close() {
-	SDL_Delay(5000);
 	SDL_FreeSurface(surfaceMessage);
 	SDL_DestroyWindow(window);
 	Mix_FreeMusic(backgroundMusic);
