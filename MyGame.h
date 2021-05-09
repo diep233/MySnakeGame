@@ -5,6 +5,7 @@
 #include"SDL_image.h"
 #include"SDL_mixer.h"
 #include"SDL_ttf.h"
+#include"TextObject.h"
 
 using namespace std;
 
@@ -25,17 +26,17 @@ class game{
 	bool quit = false;
 
 	SDL_Window* window = NULL;
-	SDL_Surface* gScreenSurFace = NULL;
-	SDL_Surface* surfaceMessage;
+	SDL_Surface* backgroundImageSurface = NULL;
+	SDL_Surface* textSurface = NULL;
+	SDL_Surface* screen = NULL;
 	SDL_Event event;
 	SDL_Renderer* render = NULL;
 	SDL_Color white = { 255,255,255 };
-	SDL_Texture* Message;
+	SDL_Color black = { 0,0,0 };
+	SDL_Texture* messageTexture;
 	SDL_Rect srcrectMessageRect;
 	SDL_Rect dstrectMessageRect;
 	SDL_Rect blockPosition;
-
-	TTF_Font* gFont = NULL;
 
 	Mix_Chunk* effectMusic = NULL;
 	Mix_Music* backgroundMusic = NULL;
@@ -62,4 +63,9 @@ class game{
 		void setRundomFood();
 		void playSoundEffect();
 		void close();
+		void loadBackgroundImage();
+		SDL_Texture* loadImage(string str);
+		int showMenu();
+		void displayResourceNAMessageBox();
+		bool checkMouse();
 };

@@ -1,4 +1,5 @@
 #include<iostream>
+#include<windows.h>
 #include<string>
 #include"SDL.h"
 #include"MyGame.h"
@@ -8,9 +9,15 @@
 void game::run() {
 	init();
 	playBackgroundMusic();
-	setRundomFood();
-	gameLoop();
-	close();
+	int indexMenu = showMenu();
+	if (indexMenu == 0) {
+		setRundomFood();
+		gameLoop();
+		close();
+	}
+	else {
+		close();
+	}
 }
 
 void game::init() {
@@ -19,10 +26,11 @@ void game::init() {
 		cout << "Unable to initialize SDL" << SDL_GetError();
 		exit(EXIT_FAILURE);
 	}
-	window = SDL_CreateWindow("Wellcome to my snake game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, heightBoard, widthBoard, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow("Wellcome to my snake game!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, heightBoard, widthBoard, SDL_WINDOW_SHOWN);
 	if (window == NULL) {
 		cout << "Unable to create window" << SDL_GetError();
 	}
+	screen = SDL_GetWindowSurface(window);
 	render = SDL_CreateRenderer(window, -1, 0);
 
 	for (int i = 0; i < coordidateHeight; ++i) {
@@ -41,7 +49,7 @@ void game::gameLoop() {
 		keyBoardEvent();
 		update();
 		renderAll();
-		showScores();
+		//showScores();
 		timeRenderAFrame = SDL_GetTicks() - timeStartAFrame;
 
 		if (timeRenderAFrame < DELAY_TIME) {
@@ -131,9 +139,9 @@ void game::update() {
 
 	if (newPoint.y > coordidateHeight - 1)
 	{
-		newPoint.y = 0;
+		newPoint.y = 2;
 	}
-	else if (newPoint.y < 0) newPoint.y = coordidateHeight - 1;
+	else if (newPoint.y < 2) newPoint.y = coordidateHeight - 1;
 	
 	SDL_Point nextBodyPoint;
 	nextBodyPoint = snakeHeadPoint;
@@ -165,6 +173,7 @@ void game::update() {
 		snakeBody.push_back(nextBodyPoint);
 		array[newPoint.x][newPoint.y] = head;
 		renderAll();
+		displayResourceNAMessageBox();
 		quit = true;
 	}
 
@@ -176,6 +185,8 @@ void game::renderAll() {
 	SDL_Rect blockPosition;
 	SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
 	SDL_RenderClear(render);
+
+	loadBackgroundImage();
 
 	SDL_SetRenderDrawColor(render, 255, 0, 0, 0);
 	blockPosition.x = foodPoint.x * 16;
@@ -193,6 +204,13 @@ void game::renderAll() {
 	SDL_SetRenderDrawColor(render, 255, 255, 0, 0xFF);
 	blockPosition.x = snakeHeadPoint.x * 16;
 	blockPosition.y = snakeHeadPoint.y * 16;
+	SDL_RenderFillRect(render, &blockPosition);
+
+	SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+	blockPosition.x = 0;
+	blockPosition.y = 0;
+	blockPosition.w = 640;
+	blockPosition.h = 32;
 	SDL_RenderFillRect(render, &blockPosition);
 
 	showScores();
@@ -227,7 +245,7 @@ void game::playSoundEffect() {
 }
 
 void game::close() {
-	SDL_FreeSurface(surfaceMessage);
+	SDL_FreeSurface(textSurface);
 	SDL_DestroyWindow(window);
 	Mix_FreeMusic(backgroundMusic);
 	Mix_FreeChunk(effectMusic);
@@ -236,32 +254,129 @@ void game::close() {
 }
 
 void game::showScores() {
-	gFont = TTF_OpenFont("OpenSans-Bold.ttf", 24);
 
-	string title = "Snakle++ Score: " + to_string((snakeSize - 1) * 10);
+	TTF_Font* gFont = TTF_OpenFont("OpenSans-Bold.ttf", 24);
+	string title = "Snake++ Score: " + to_string((snakeSize - 1) * 10);
 
-	surfaceMessage = TTF_RenderText_Solid(gFont, title.c_str(), white);
+	textSurface = TTF_RenderText_Solid(gFont, title.c_str(), white);
 	
-	if (surfaceMessage == NULL) {
+	if (textSurface == NULL) {
 		cout << "Text render error" << SDL_GetError();
 	}
 
-	Message = SDL_CreateTextureFromSurface(render, surfaceMessage);
+	messageTexture = SDL_CreateTextureFromSurface(render, textSurface);
 	
-	if (Message == NULL) {
-		cout << "Createe Texture Error" << SDL_GetError();
+	if (messageTexture == NULL) {
+		cout << "Create Texture Error" << SDL_GetError();
 	}
 
 	srcrectMessageRect.x = (heightBoard / 2) - 100;
 	srcrectMessageRect.y = 0;
 	srcrectMessageRect.w = 200;
-	srcrectMessageRect.h = 42;
+	srcrectMessageRect.h = 30;
 
 	dstrectMessageRect.x = (heightBoard / 2) - 100 + 50;
 	dstrectMessageRect.y = 0;
 	dstrectMessageRect.w = 200;
 	dstrectMessageRect.h = 42;
 
-	SDL_RenderCopy(render, Message, NULL, &srcrectMessageRect);
+	SDL_RenderCopy(render, messageTexture, NULL, &srcrectMessageRect);
 }
 
+void game::loadBackgroundImage() {
+	SDL_Texture* loadBackgroundImg = loadImage("ImageBackground1.bmp");
+	SDL_RenderCopy(render, loadBackgroundImg, NULL, NULL);
+
+}
+
+void game::displayResourceNAMessageBox()
+{
+	int msgboxID = MessageBox(
+		NULL,
+		(LPCWSTR)L"GAME OVER!",
+		(LPCWSTR)L"GAME OVER!",
+		 MB_OK | MB_DEFBUTTON2
+	);
+}
+
+SDL_Texture* game::loadImage(string str) {
+	SDL_Surface* imageSurface = NULL;
+	SDL_Texture* backgroundImageTexture = NULL;
+	imageSurface = SDL_LoadBMP(str.c_str());
+	if (imageSurface == NULL) {
+		cout << "Load background image error" << SDL_GetError();
+	}
+	backgroundImageTexture = SDL_CreateTextureFromSurface(render, imageSurface);
+	
+	return backgroundImageTexture;
+
+}
+
+bool checkMouseCoordidate(int xMouse, int yMouse, SDL_Rect rect) {
+	if (xMouse >= rect.x && xMouse <= rect.x + rect.w &&
+		yMouse >= rect.y && yMouse <= rect.y + rect.h)
+		return true;
+	return false;
+}
+
+int game::showMenu() {
+	TTF_Font* font = TTF_OpenFont("OpenSans-Bold.ttf", 50);
+	SDL_Texture* loadImg = loadImage("ImageBackground1.bmp");
+	SDL_RenderCopy(render, loadImg, NULL, NULL);
+	const int menuItem = 2;
+
+	SDL_Rect arr[menuItem];
+
+	TextObject text[menuItem];
+	text[0].setText("Play Game");
+	text[0].setColor(TextObject::WHITE);
+	text[0].setRect(210, 400, 200, 50);
+
+	text[1].setText("Exit");
+	text[1].setColor(TextObject::WHITE);
+	text[1].setRect(210, 500, 80, 50);
+	
+	bool running = true;
+	while (running) {
+		for (int i = 0; i < menuItem; ++i) {
+			text[i].show(screen, render);
+		}
+		SDL_Event event;
+		int xMouse;
+		int yMouse;
+		while (SDL_PollEvent(&event)) {
+			switch (event.type) {
+				case SDL_QUIT:
+					return 1;
+					break;
+				case SDL_MOUSEMOTION:
+				{
+					xMouse = event.motion.x;
+					yMouse = event.motion.y;
+					for (int i = 0; i < menuItem; ++i) {
+
+						if (checkMouseCoordidate(xMouse, yMouse, text[i].getRect())) {
+							text[i].setColor(TextObject::RED);
+						}
+						else {
+							text[i].setColor(TextObject::WHITE);
+						}
+					}
+				}
+					break;
+				case SDL_MOUSEBUTTONDOWN:
+				{
+					xMouse = event.motion.x;
+					yMouse = event.motion.y;
+					for (int i = 0; i < menuItem; ++i) {
+
+						if (checkMouseCoordidate(xMouse, yMouse, text[i].getRect()))
+							return i;
+					}
+				}
+				break;
+			}
+		}
+	}
+				
+}

@@ -147,9 +147,11 @@
   <ItemGroup>
     <ClCompile Include="SnakeGameMain.cpp" />
     <ClCompile Include="MyGame.cpp" />
+    <ClCompile Include="TextObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyGame.h" />
+    <ClInclude Include="TextObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
