@@ -16,7 +16,7 @@ class TextObject {
 		void setColor(int type);
 		void setRect(int x, int y, int w, int h);
 		void show(SDL_Renderer* render);
-		void applySurface(SDL_Surface* textSurface, SDL_Surface* screen, int x, int y);
+		//void applySurface(SDL_Surface* textSurface, SDL_Surface* screen, int x, int y);
 		string getText();
 		SDL_Rect getRect();
 	private:
