@@ -8,16 +8,16 @@ class TextObject {
 	public:
 		enum textColor
 		{
-			RED = 0,
-			WHITE = 1,
-			BLACK = 2
+			GREEN = 0,
+			YELLOW = 1,
+			WHITE = 2
 		};
 		void setText(string str);
 		void setColor(int type);
 		void setRect(int x, int y, int w, int h);
-		void show(SDL_Surface* textSurface, SDL_Renderer* render);
-		void createText(TTF_Font* font, SDL_Surface* textSurface);
+		void show(SDL_Renderer* render);
 		void applySurface(SDL_Surface* textSurface, SDL_Surface* screen, int x, int y);
+		string getText();
 		SDL_Rect getRect();
 	private:
 		string textString;
@@ -25,8 +25,5 @@ class TextObject {
 		SDL_Rect textRect;
 		SDL_Surface* textSurface = NULL;
 		SDL_Texture* textTexture = NULL;
-		TTF_Font* font = TTF_OpenFont("OpenSans-Bold.ttf", 30);
-		SDL_Color white = { 255,255,255 };
-		SDL_Color black = { 0,0,0 };
-		
+		TTF_Font* font = TTF_OpenFont("OpenSans-Bold.ttf", 24);
 };

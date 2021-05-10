@@ -49,7 +49,6 @@ void game::gameLoop() {
 		keyBoardEvent();
 		update();
 		renderAll();
-		//showScores();
 		timeRenderAFrame = SDL_GetTicks() - timeStartAFrame;
 
 		if (timeRenderAFrame < DELAY_TIME) {
@@ -172,7 +171,7 @@ void game::update() {
 	else {
 		snakeBody.push_back(nextBodyPoint);
 		array[newPoint.x][newPoint.y] = head;
-		renderAll();
+		//showGameOver();
 		displayResourceNAMessageBox();
 		quit = true;
 	}
@@ -188,7 +187,7 @@ void game::renderAll() {
 
 	loadBackgroundImage();
 
-	SDL_SetRenderDrawColor(render, 255, 0, 0, 0);
+	SDL_SetRenderDrawColor(render, 61, 199, 16, 0);
 	blockPosition.x = foodPoint.x * 16;
 	blockPosition.y = foodPoint.y * 16;
 	blockPosition.w = blockPosition.h = 16;
@@ -201,7 +200,7 @@ void game::renderAll() {
 		SDL_RenderFillRect(render, &blockPosition);
 	}
 
-	SDL_SetRenderDrawColor(render, 255, 255, 0, 0xFF);
+	SDL_SetRenderDrawColor(render, 242, 209, 17, 0xFF);
 	blockPosition.x = snakeHeadPoint.x * 16;
 	blockPosition.y = snakeHeadPoint.y * 16;
 	SDL_RenderFillRect(render, &blockPosition);
@@ -236,7 +235,7 @@ void game::playBackgroundMusic() {
 	Mix_PlayMusic(backgroundMusic, -1);
 }
 void game::playSoundEffect() {
-	effectMusic = Mix_LoadWAV("moveDirSound.wav");
+	effectMusic = Mix_LoadWAV("beep.wav");
 	if (effectMusic == NULL) {
 		cout << "Unable to load effect sound" << SDL_GetError();
 	}
@@ -245,6 +244,7 @@ void game::playSoundEffect() {
 }
 
 void game::close() {
+	SDL_Delay(1000);
 	SDL_FreeSurface(textSurface);
 	SDL_DestroyWindow(window);
 	Mix_FreeMusic(backgroundMusic);
@@ -255,36 +255,15 @@ void game::close() {
 
 void game::showScores() {
 
-	TTF_Font* gFont = TTF_OpenFont("OpenSans-Bold.ttf", 24);
-	string title = "Snake++ Score: " + to_string((snakeSize - 1) * 10);
-
-	textSurface = TTF_RenderText_Solid(gFont, title.c_str(), white);
-	
-	if (textSurface == NULL) {
-		cout << "Text render error" << SDL_GetError();
-	}
-
-	messageTexture = SDL_CreateTextureFromSurface(render, textSurface);
-	
-	if (messageTexture == NULL) {
-		cout << "Create Texture Error" << SDL_GetError();
-	}
-
-	srcrectMessageRect.x = (heightBoard / 2) - 100;
-	srcrectMessageRect.y = 0;
-	srcrectMessageRect.w = 200;
-	srcrectMessageRect.h = 30;
-
-	dstrectMessageRect.x = (heightBoard / 2) - 100 + 50;
-	dstrectMessageRect.y = 0;
-	dstrectMessageRect.w = 200;
-	dstrectMessageRect.h = 42;
-
-	SDL_RenderCopy(render, messageTexture, NULL, &srcrectMessageRect);
+	TextObject showScore;
+	showScore.setText("Snake++ Score: " + to_string((snakeSize - 1) * 10));
+	showScore.setColor(TextObject::WHITE);
+	showScore.setRect((heightBoard / 2) - 100, 0, 200, 42);
+	showScore.show(render);
 }
 
 void game::loadBackgroundImage() {
-	SDL_Texture* loadBackgroundImg = loadImage("ImageBackground1.bmp");
+	SDL_Texture* loadBackgroundImg = loadImage("ImageBackground3.bmp");
 	SDL_RenderCopy(render, loadBackgroundImg, NULL, NULL);
 
 }
@@ -323,23 +302,24 @@ int game::showMenu() {
 	TTF_Font* font = TTF_OpenFont("OpenSans-Bold.ttf", 50);
 	SDL_Texture* loadImg = loadImage("ImageBackground1.bmp");
 	SDL_RenderCopy(render, loadImg, NULL, NULL);
+	//loadImage("ImageBackground1.bmp", render);
 	const int menuItem = 2;
 
 	SDL_Rect arr[menuItem];
 
 	TextObject text[menuItem];
 	text[0].setText("Play Game");
-	text[0].setColor(TextObject::WHITE);
+	text[0].setColor(TextObject::YELLOW);
 	text[0].setRect(210, 400, 200, 50);
 
 	text[1].setText("Exit");
-	text[1].setColor(TextObject::WHITE);
+	text[1].setColor(TextObject::YELLOW);
 	text[1].setRect(210, 500, 80, 50);
 	
 	bool running = true;
 	while (running) {
 		for (int i = 0; i < menuItem; ++i) {
-			text[i].show(screen, render);
+			text[i].show(render);
 		}
 		SDL_Event event;
 		int xMouse;
@@ -356,10 +336,10 @@ int game::showMenu() {
 					for (int i = 0; i < menuItem; ++i) {
 
 						if (checkMouseCoordidate(xMouse, yMouse, text[i].getRect())) {
-							text[i].setColor(TextObject::RED);
+							text[i].setColor(TextObject::GREEN);
 						}
 						else {
-							text[i].setColor(TextObject::WHITE);
+							text[i].setColor(TextObject::YELLOW);
 						}
 					}
 				}
@@ -379,4 +359,15 @@ int game::showMenu() {
 		}
 	}
 				
+}
+
+void game::showGameOver() {
+	TTF_Font* font = TTF_OpenFont("OpenSans-Bold.ttf", 50);
+	SDL_Texture* loadImg = loadImage("ImageBackground1.bmp");
+	SDL_RenderCopy(render, loadImg, NULL, NULL);
+	TextObject gameOverText;
+	gameOverText.setText("GAME OVER");
+	gameOverText.setColor(TextObject::YELLOW);
+	gameOverText.setRect(210, 400, 200, 50);
+	gameOverText.show(render);
 }

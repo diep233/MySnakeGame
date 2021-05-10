@@ -9,7 +9,7 @@
 
 using namespace std;
 
-class game{
+class game {
 
 	const int heightBoard = 640;
 	const int widthBoard = 640;
@@ -68,4 +68,5 @@ class game{
 		int showMenu();
 		void displayResourceNAMessageBox();
 		bool checkMouse();
+		void showGameOver();
 };

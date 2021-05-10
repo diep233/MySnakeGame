@@ -6,15 +6,19 @@ void TextObject::setText(string str) {
 	textString = str;
 }
 
+string TextObject::getText() {
+	return textString;
+}
+
 void TextObject::setColor(int type) {
-	if (type == RED) {
-		textColor = { 255,0,0 };
+	if (type == GREEN) {
+		textColor = { 61,199,16 };
 	}
-	else if (type == BLACK) {
-		textColor = { 0,0,0 };
-	}
-	else if(type == WHITE) {
+	else if (type == WHITE) {
 		textColor = { 255,255,255 };
+	}
+	else if(type == YELLOW) {
+		textColor = { 242,209,17 };
 	}
 }
 
@@ -29,7 +33,7 @@ SDL_Rect TextObject::getRect() {
 	return textRect;
 }
 
-void TextObject::show(SDL_Surface* screenSurface, SDL_Renderer* render) {
+void TextObject::show(SDL_Renderer* render) {
 	textSurface = TTF_RenderText_Solid(font, textString.c_str(), textColor);
 
 	if (textSurface == NULL) {
