@@ -32,5 +32,5 @@ Trò chơi:
 
 
 
-![Capture1](https://user-images.githubusercontent.com/54406682/117641527-73cb5d00-b1b0-11eb-8aa0-db35b7248678.JPG)
+
 
